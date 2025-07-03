@@ -1,0 +1,10 @@
+@import './base.css';
+
+.wrapper {
+  height: 100%;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  font-family: Roboto, sans-serif;
+}

@@ -27,12 +27,6 @@ export default defineConfig({
   },
   server: {
     open: true,
-    proxy: {
-      '/api': {
-        target: 'http://109.73.206.144:6969',
-        changeOrigin: true,
-        secure: false
-      }
-    }
+
   },
 })

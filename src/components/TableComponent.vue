@@ -8,8 +8,7 @@ const props = defineProps({
   collection: String,
   pin: String,
 })
-
-const API_BASE_URL = 'http://109.73.206.144:6969/api'
+const API_BASE_URL = '/api/proxy'
 
 const tableData = ref([])
 const paginationData = ref()

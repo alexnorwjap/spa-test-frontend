@@ -19,7 +19,7 @@ export default defineConfig({
     }),
     vueDevTools(),
   ],
-  base: '/spa-test-frontend/',
+  base: '/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

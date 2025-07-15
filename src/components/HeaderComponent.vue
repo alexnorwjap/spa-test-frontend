@@ -1,9 +1,12 @@
-<script setup></script>
+<script setup>
+</script>
 
 <template lang="pug">
 header.header
   nav.header__navigation
     ul.header__list
+      li.header__item
+        RouterLink.header__link(to='/') Main
       li.header__item
         RouterLink.header__link(to='/stocks') Stocks
       li.header__item

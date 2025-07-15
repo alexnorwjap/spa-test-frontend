@@ -3,6 +3,7 @@ import { ref, onMounted, computed, watch } from 'vue'
 import PieComponent from '@/components/PieComponent.vue'
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 import axios from 'axios'
+
 const props = defineProps({
   input: Object,
   collection: String,
@@ -59,6 +60,7 @@ const updatePieDataWithCurrentColumn = () => {
 
   const currentColumn = columns.value[currentColumnIndex.value]
   pieData.value = countObjectsByKey(tableData.value, currentColumn)
+  console.log(pieData.value)
 }
 
 const fetchStocks = async () => {
@@ -87,8 +89,9 @@ const refreshData = () => {
   fetchStocks()
 }
 
-onMounted(() => {
-  fetchStocks()
+onMounted(async () => {
+  await fetchStocks()
+  console.log(route.currentRoute.value.query)
 })
 
 watch(

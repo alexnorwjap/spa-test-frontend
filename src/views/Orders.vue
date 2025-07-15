@@ -7,11 +7,11 @@ const orders = 'orders'
 const API_KEY = 'E6kUTYrYwZq2tN4QEtyzsbEBk3ie'
 const ordersPin = 'oblast'
 const params = computed(() => ({
-  dateFrom: '2024-07-01',
-  dateTo: '2025-07-03',
+  dateFrom: '2025-07-11',
+  dateTo: '2025-07-12',
   page: 1,
   key: API_KEY,
-  limit: 100,
+  limit: 400,
 }))
 </script>
 

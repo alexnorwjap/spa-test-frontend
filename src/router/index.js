@@ -5,7 +5,17 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/stocks',
+      redirect: '/main',
+    },
+    {
+      path: '/main',
+      name: 'main',
+      component: () => import('../views/Main.vue'),
+    },
+    {
+      path: '/rate',
+      name: 'rate',
+      component: () => import('../views/RatePage.vue'),
     },
     {
       path: '/stocks',

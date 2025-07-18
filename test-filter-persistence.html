@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Filter Persistence Test</title>
+</head>
+<body>
+    <h1>Filter Persistence Test</h1>
+    <div id="test-results"></div>
+    
+    <script>
+        // Test localStorage functionality for table filters
+        function testFilterPersistence() {
+            const results = [];
+            
+            // Test 1: Save filters for sales collection
+            const salesFilters = {
+                region_name: ['Moscow', 'SPB'],
+                date: ['2024-07-01']
+            };
+            
+            try {
+                localStorage.setItem('table-filters-sales', JSON.stringify(salesFilters));
+                results.push('✓ Sales filters saved successfully');
+            } catch (error) {
+                results.push('✗ Failed to save sales filters: ' + error.message);
+            }
+            
+            // Test 2: Load filters for sales collection
+            try {
+                const loadedFilters = JSON.parse(localStorage.getItem('table-filters-sales'));
+                if (JSON.stringify(loadedFilters) === JSON.stringify(salesFilters)) {
+                    results.push('✓ Sales filters loaded correctly');
+                } else {
+                    results.push('✗ Sales filters loaded incorrectly');
+                }
+            } catch (error) {
+                results.push('✗ Failed to load sales filters: ' + error.message);
+            }
+            
+            // Test 3: Test different collections
+            const collections = ['stocks', 'orders', 'incomes'];
+            collections.forEach(collection => {
+                const testFilters = { test: ['value1', 'value2'] };
+                try {
+                    localStorage.setItem(`table-filters-${collection}`, JSON.stringify(testFilters));
+                    const loaded = JSON.parse(localStorage.getItem(`table-filters-${collection}`));
+                    if (JSON.stringify(loaded) === JSON.stringify(testFilters)) {
+                        results.push(`✓ ${collection} filters work correctly`);
+                    } else {
+                        results.push(`✗ ${collection} filters failed`);
+                    }
+                } catch (error) {
+                    results.push(`✗ ${collection} filters error: ${error.message}`);
+                }
+            });
+            
+            // Test 4: Clear filters
+            try {
+                localStorage.setItem('table-filters-sales', JSON.stringify({}));
+                const cleared = JSON.parse(localStorage.getItem('table-filters-sales'));
+                if (Object.keys(cleared).length === 0) {
+                    results.push('✓ Filter clearing works correctly');
+                } else {
+                    results.push('✗ Filter clearing failed');
+                }
+            } catch (error) {
+                results.push('✗ Filter clearing error: ' + error.message);
+            }
+            
+            return results;
+        }
+        
+        // Run tests
+        const testResults = testFilterPersistence();
+        document.getElementById('test-results').innerHTML = testResults.map(result => `<p>${result}</p>`).join('');
+        
+        console.log('Filter Persistence Test Results:');
+        testResults.forEach(result => console.log(result));
+    </script>
+</body>
+</html>

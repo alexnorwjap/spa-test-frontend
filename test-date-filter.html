@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Filter Test</title>
+</head>
+<body>
+    <h1>Date Filter Implementation Test</h1>
+    <div id="test-results"></div>
+
+    <script>
+        // Simulate test data with date field
+        const testData = [
+            { nm_id: 1, date: '2024-01-15', oblast: 'Moscow', supplier_article: 'Brand A' },
+            { nm_id: 2, date: '2024-01-16', oblast: 'SPB', supplier_article: 'Brand B' },
+            { nm_id: 3, date: '2024-01-15', oblast: 'Moscow', supplier_article: 'Brand A' },
+            { nm_id: 4, date: '2024-01-17', oblast: 'Kazan', supplier_article: 'Brand C' },
+            { nm_id: 5, date: '2024-01-16', oblast: 'Moscow', supplier_article: 'Brand B' }
+        ];
+
+        // Simulate filters
+        const filters = {
+            articles: [],
+            dates: ['2024-01-15', '2024-01-16'],
+            region: '',
+            brand: ''
+        };
+
+        // Test date filtering logic
+        function applyDateFilter(data, dateFilters) {
+            if (!dateFilters || dateFilters.length === 0) {
+                return data;
+            }
+            
+            return data.filter(item => {
+                if (item.date) {
+                    const itemDateStr = typeof item.date === 'string' ? item.date.split('T')[0] : item.date;
+                    return dateFilters.includes(itemDateStr);
+                }
+                return false;
+            });
+        }
+
+        // Test available dates extraction
+        function getAvailableDates(data) {
+            const dates = new Set();
+            const dateCounts = new Map();
+
+            data.forEach(item => {
+                if (item.date) {
+                    const dateStr = typeof item.date === 'string' ? item.date.split('T')[0] : item.date;
+                    dates.add(dateStr);
+                    dateCounts.set(dateStr, (dateCounts.get(dateStr) || 0) + 1);
+                }
+            });
+
+            return Array.from(dates)
+                .sort()
+                .map(date => ({
+                    value: date,
+                    label: `${date} (${dateCounts.get(date) || 0})`
+                }));
+        }
+
+        // Run tests
+        function runTests() {
+            const results = [];
+            
+            // Test 1: Extract available dates
+            const availableDates = getAvailableDates(testData);
+            results.push(`Test 1 - Available dates: ${JSON.stringify(availableDates)}`);
+            
+            // Test 2: Filter by dates
+            const filteredData = applyDateFilter(testData, filters.dates);
+            results.push(`Test 2 - Filtered data (dates ${filters.dates.join(', ')}): ${JSON.stringify(filteredData.map(item => ({ nm_id: item.nm_id, date: item.date })))}`);
+            
+            // Test 3: Check counts
+            const expectedCount = testData.filter(item => filters.dates.includes(item.date)).length;
+            results.push(`Test 3 - Expected filtered count: ${expectedCount}, Actual: ${filteredData.length}`);
+            
+            return results;
+        }
+
+        // Display results
+        const testResults = runTests();
+        document.getElementById('test-results').innerHTML = testResults.map(result => `<p>${result}</p>`).join('');
+        
+        console.log('Date Filter Test Results:');
+        testResults.forEach(result => console.log(result));
+    </script>
+</body>
+</html>

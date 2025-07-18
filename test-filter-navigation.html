@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Filter Navigation Test</title>
+</head>
+<body>
+    <h1>Filter Navigation Test</h1>
+    <div id="test-results"></div>
+    
+    <script>
+        // Test filter persistence across navigation
+        function testFilterNavigation() {
+            const results = [];
+            
+            // Simulate filter states for different collections
+            const collections = ['sales', 'stocks', 'orders', 'incomes'];
+            
+            // Test 1: Save filters for each collection
+            collections.forEach(collection => {
+                const testFilters = {
+                    [`column_${collection}`]: [`value1_${collection}`, `value2_${collection}`],
+                    'common_column': [`common_value_${collection}`]
+                };
+                
+                try {
+                    localStorage.setItem(`table-filters-${collection}`, JSON.stringify(testFilters));
+                    results.push(`✓ ${collection} filters saved successfully`);
+                } catch (error) {
+                    results.push(`✗ Failed to save ${collection} filters: ${error.message}`);
+                }
+            });
+            
+            // Test 2: Verify each collection has independent filter storage
+            collections.forEach(collection => {
+                try {
+                    const savedFilters = JSON.parse(localStorage.getItem(`table-filters-${collection}`));
+                    if (savedFilters && savedFilters[`column_${collection}`]) {
+                        results.push(`✓ ${collection} filters loaded independently`);
+                    } else {
+                        results.push(`✗ ${collection} filters not loaded correctly`);
+                    }
+                } catch (error) {
+                    results.push(`✗ Error loading ${collection} filters: ${error.message}`);
+                }
+            });
+            
+            // Test 3: Simulate navigation between pages (filters should persist)
+            const navigationTest = () => {
+                // Simulate user applying filters on sales page
+                const salesFilters = { region_name: ['Moscow'], date: ['2024-07-01'] };
+                localStorage.setItem('table-filters-sales', JSON.stringify(salesFilters));
+                
+                // Simulate navigation to stocks page
+                const stocksFilters = { warehouse_name: ['Warehouse1'] };
+                localStorage.setItem('table-filters-stocks', JSON.stringify(stocksFilters));
+                
+                // Navigate back to sales - filters should still be there
+                const restoredSalesFilters = JSON.parse(localStorage.getItem('table-filters-sales'));
+                if (JSON.stringify(restoredSalesFilters) === JSON.stringify(salesFilters)) {
+                    results.push('✓ Sales filters persisted after navigation');
+                } else {
+                    results.push('✗ Sales filters lost after navigation');
+                }
+                
+                // Check stocks filters are still there
+                const restoredStocksFilters = JSON.parse(localStorage.getItem('table-filters-stocks'));
+                if (JSON.stringify(restoredStocksFilters) === JSON.stringify(stocksFilters)) {
+                    results.push('✓ Stocks filters persisted independently');
+                } else {
+                    results.push('✗ Stocks filters lost');
+                }
+            };
+            
+            navigationTest();
+            
+            // Test 4: Test filter clearing
+            try {
+                localStorage.setItem('table-filters-sales', JSON.stringify({}));
+                const clearedFilters = JSON.parse(localStorage.getItem('table-filters-sales'));
+                if (Object.keys(clearedFilters).length === 0) {
+                    results.push('✓ Filter clearing works correctly');
+                } else {
+                    results.push('✗ Filter clearing failed');
+                }
+            } catch (error) {
+                results.push('✗ Filter clearing error: ' + error.message);
+            }
+            
+            // Test 5: Test page refresh simulation
+            const refreshTest = () => {
+                const testData = { test_column: ['test_value'] };
+                localStorage.setItem('table-filters-orders', JSON.stringify(testData));
+                
+                // Simulate page refresh by reading the data again
+                const afterRefresh = JSON.parse(localStorage.getItem('table-filters-orders'));
+                if (JSON.stringify(afterRefresh) === JSON.stringify(testData)) {
+                    results.push('✓ Filters survive page refresh');
+                } else {
+                    results.push('✗ Filters lost after page refresh');
+                }
+            };
+            
+            refreshTest();
+            
+            return results;
+        }
+        
+        // Run tests
+        const testResults = testFilterNavigation();
+        document.getElementById('test-results').innerHTML = testResults.map(result => `<p>${result}</p>`).join('');
+        
+        console.log('Filter Navigation Test Results:');
+        testResults.forEach(result => console.log(result));
+        
+        // Clean up test data
+        ['sales', 'stocks', 'orders', 'incomes'].forEach(collection => {
+            localStorage.removeItem(`table-filters-${collection}`);
+        });
+    </script>
+</body>
+</html>

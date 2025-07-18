@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Filter Functionality Test</title>
+</head>
+<body>
+    <h1>Filter Functionality Test</h1>
+    <div id="test-results"></div>
+    
+    <script>
+        // Test the filter functionality logic
+        function testFilterFunctionality() {
+            const results = [];
+            
+            // Mock data similar to what would be in tableData
+            const mockTableData = [
+                { region: 'Moscow', category: 'Electronics', brand: 'Apple' },
+                { region: 'Moscow', category: 'Clothing', brand: 'Nike' },
+                { region: 'SPB', category: 'Electronics', brand: 'Samsung' },
+                { region: 'SPB', category: 'Books', brand: 'Penguin' },
+                { region: 'Kazan', category: 'Electronics', brand: 'Apple' }
+            ];
+            
+            // Mock filters state
+            const mockFilters = {
+                region: ['Moscow']
+            };
+            
+            // Test 1: Filter data based on active filters
+            const getFilteredData = (data, filters) => {
+                if (!filters || Object.keys(filters).length === 0) {
+                    return data;
+                }
+                
+                return data.filter(row => {
+                    return Object.entries(filters).every(([columnKey, filterValues]) => {
+                        if (!filterValues || filterValues.length === 0) return true;
+                        return filterValues.includes(String(row[columnKey]));
+                    });
+                });
+            };
+            
+            const filteredData = getFilteredData(mockTableData, mockFilters);
+            if (filteredData.length === 2 && filteredData.every(item => item.region === 'Moscow')) {
+                results.push('✓ Filter data logic works correctly');
+            } else {
+                results.push('✗ Filter data logic failed');
+            }
+            
+            // Test 2: Generate available filters from filtered data
+            const generateAvailableFilters = (data) => {
+                const columns = ['region', 'category', 'brand'];
+                const availableFilters = {};
+                
+                columns.forEach(column => {
+                    const uniqueValues = [...new Set(
+                        data
+                            .map(row => row[column])
+                            .filter(value => value !== null && value !== undefined && value !== '')
+                    )];
+                    
+                    availableFilters[column] = uniqueValues
+                        .sort()
+                        .map(value => ({
+                            text: String(value),
+                            value: String(value)
+                        }));
+                });
+                
+                return availableFilters;
+            };
+            
+            const availableFilters = generateAvailableFilters(filteredData);
+            
+            // When region is filtered to 'Moscow', category should only show 'Electronics' and 'Clothing'
+            const categoryOptions = availableFilters.category.map(opt => opt.value);
+            if (categoryOptions.includes('Electronics') && categoryOptions.includes('Clothing') && !categoryOptions.includes('Books')) {
+                results.push('✓ Available filters updated correctly based on filtered data');
+            } else {
+                results.push('✗ Available filters not updated correctly: ' + JSON.stringify(categoryOptions));
+            }
+            
+            // Test 3: Filter icon logic
+            const getFilterIcon = (column, filters) => {
+                return filters[column] && filters[column].length > 0 ? 'Finished' : 'Operation';
+            };
+            
+            if (getFilterIcon('region', mockFilters) === 'Finished' && getFilterIcon('category', mockFilters) === 'Operation') {
+                results.push('✓ Filter icon logic works correctly');
+            } else {
+                results.push('✗ Filter icon logic failed');
+            }
+            
+            // Test 4: Clear filters logic
+            const clearFilters = () => {
+                return {};
+            };
+            
+            const clearedFilters = clearFilters();
+            const allDataFiltered = getFilteredData(mockTableData, clearedFilters);
+            if (allDataFiltered.length === mockTableData.length) {
+                results.push('✓ Clear filters logic works correctly');
+            } else {
+                results.push('✗ Clear filters logic failed');
+            }
+            
+            return results;
+        }
+        
+        // Run tests
+        const testResults = testFilterFunctionality();
+        document.getElementById('test-results').innerHTML = testResults.map(result => `<p>${result}</p>`).join('');
+        
+        console.log('Filter Functionality Test Results:');
+        testResults.forEach(result => console.log(result));
+    </script>
+</body>
+</html>
